@@ -12,12 +12,15 @@ PUSH = 0b01000101
 POP = 0b01000110
 CALL = 0b01010000
 RET = 0b00010001
-
+CMP = 0b10100111
+# JMP = 0b01010100
+# JEQ = 0b01010101
+# JNE = 0b01010110
 ###  INVENTORY OF FILES ###
 
 # cpu.py - CPU class and methods
 # ls8.py - Instatiation of CPU class,
-#   CPU.load() and CPU.run() methods
+# CPU.load() and CPU.run() methods
 
 ### Needs to be implemented or removed: ##
 # DAY 1:
@@ -41,8 +44,17 @@ RET = 0b00010001
 # DAY 4:
 # X implement CALL and RET
 
+# Sprint Challenge:
+
+# Add CMP Instruction
+
+# Add JMP Instruction
+
+# Add JEQ and JNE Instructions
 
 ############################
+
+
 class CPU:
     """Main CPU class."""
 
@@ -53,6 +65,8 @@ class CPU:
         self.ram = [0] * 256  # Random Access Memory(RAM)
         self.pc = 0  # Program Count
         self.is_cpu_running = True
+        # Flags bits (ex. 00000LGE, L = (<), G = (>), E = (==))
+        self.fl = [0] * 8
         # Implement Branchtable
         self.branch_table = {}
         self.branch_table[LDI] = self.op_LDI
@@ -65,6 +79,10 @@ class CPU:
         self.branch_table[POP] = self.op_POP
         self.branch_table[CALL] = self.op_CALL
         self.branch_table[RET] = self.op_RET
+        self.branch_table[CMP] = self.op_CMP
+        # self.branch_table[JMP] = self.op_JMP
+        # self.branch_table[JEQ] = self.op_JEQ
+        # self.branch_table[JNE] = self.op_JNE
 
     def load(self, name_of_file):
         """Load a program into memory."""
@@ -97,6 +115,19 @@ class CPU:
             self.reg[reg_a] -= self.reg[reg_b]
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+        elif op == "CMP":
+            if self.reg[reg_a] == self.reg[reg_b]:
+                self.fl[7] = 1  # set "E" flag to true
+                self.fl[6] = 0
+                self.fl[5] = 0
+            elif self.reg[reg_a] < self.reg[reg_b]:
+                self.fl[5] = 1  # set "L" flag to true
+                self.fl[6] = 0
+                self.fl[7] = 0
+            elif self.reg[reg_a] > self.reg[reg_b]:
+                self.fl[6] = 1  # set "G" flag to true
+                self.fl[5] = 0
+                self.fl[7] = 0
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -168,6 +199,19 @@ class CPU:
         rtn_add = self.reg[7]
         self.pc = self.ram_read(rtn_add)
         self.reg[7] += 1
+
+    def op_CMP(self, arg_A, arg_B):
+        self.alu("CMP", arg_A, arg_B)
+        self.pc += 3
+
+    # def op_JMP(self, arg_A, arg_B):
+    #     pass
+
+    # def op_JEQ(self, arg_A, arg_B):
+    #     pass
+
+    # def op_JNE(self, arg_A, arg_B):
+    #     pass
 
     def op_HLT(self, arg_A, arg_B):
         self.is_cpu_running = False
