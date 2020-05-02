@@ -16,6 +16,13 @@ CMP = 0b10100111
 JMP = 0b01010100
 JEQ = 0b01010101
 JNE = 0b01010110
+AND = 0b10101000
+OR = 0b10101010
+XOR = 0b10101011
+SHL = 0b10101100
+SHR = 0b10101101
+MOD = 0b10100100
+
 
 ###  INVENTORY OF FILES ###
 
@@ -53,6 +60,10 @@ JNE = 0b01010110
 
 # X Add JEQ and JNE Instructions
 
+# STRETCH
+
+# Add AND, OR, XOR, NOT, SHL, SHR, MOD
+
 ############################
 
 
@@ -84,6 +95,12 @@ class CPU:
         self.branch_table[JMP] = self.op_JMP
         self.branch_table[JEQ] = self.op_JEQ
         self.branch_table[JNE] = self.op_JNE
+        self.branch_table[AND] = self.op_AND
+        self.branch_table[OR] = self.op_OR
+        self.branch_table[XOR] = self.op_XOR
+        self.branch_table[SHL] = self.op_SHL
+        self.branch_table[SHR] = self.op_SHR
+        self.branch_table[MOD] = self.op_MOD
 
     def load(self, name_of_file):
         """Load a program into memory."""
@@ -129,6 +146,18 @@ class CPU:
                 self.fl[6] = 1  # set "G" flag to true
                 self.fl[5] = 0
                 self.fl[7] = 0
+        elif op == "AND":
+            self.reg[reg_a] &= self.reg[reg_b]
+        elif op == "OR":
+            self.reg[reg_a] |= self.reg[reg_b]
+        elif op == "XOR":
+            self.reg[reg_a] ^= self.reg[reg_b]
+        elif op == "SHL":
+            self.reg[reg_a] <<= self.reg[reg_b]
+        elif op == "SHR":
+            self.reg[reg_a] >>= self.reg[reg_b]
+        elif op == "MOD":
+            self.reg[reg_a] %= self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -221,6 +250,30 @@ class CPU:
             self.pc = self.reg[arg_A]
         else:
             self.pc += 2
+
+    def op_AND(self, arg_A, arg_B):
+        self.alu("AND", arg_A, arg_B)
+        self.pc += 3
+
+    def op_OR(self, arg_A, arg_B):
+        self.alu("OR", arg_A, arg_B)
+        self.pc += 3
+
+    def op_XOR(self, arg_A, arg_B):
+        self.alu("XOR", arg_A, arg_B)
+        self.pc += 3
+
+    def op_SHL(self, arg_A, arg_B):
+        self.alu("SHL", arg_A, arg_B)
+        self.pc += 3
+
+    def op_SHR(self, arg_A, arg_B):
+        self.alu("SHR", arg_A, arg_B)
+        self.pc += 3
+
+    def op_MOD(self, arg_A, arg_B):
+        self.alu("MOD", arg_A, arg_B)
+        self.pc += 3
 
     def op_HLT(self, arg_A, arg_B):
         self.is_cpu_running = False
