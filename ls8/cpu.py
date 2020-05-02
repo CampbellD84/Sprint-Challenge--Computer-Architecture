@@ -13,7 +13,7 @@ POP = 0b01000110
 CALL = 0b01010000
 RET = 0b00010001
 CMP = 0b10100111
-# JMP = 0b01010100
+JMP = 0b01010100
 # JEQ = 0b01010101
 # JNE = 0b01010110
 ###  INVENTORY OF FILES ###
@@ -46,9 +46,9 @@ CMP = 0b10100111
 
 # Sprint Challenge:
 
-# Add CMP Instruction
+# X Add CMP Instruction
 
-# Add JMP Instruction
+# X Add JMP Instruction
 
 # Add JEQ and JNE Instructions
 
@@ -80,7 +80,7 @@ class CPU:
         self.branch_table[CALL] = self.op_CALL
         self.branch_table[RET] = self.op_RET
         self.branch_table[CMP] = self.op_CMP
-        # self.branch_table[JMP] = self.op_JMP
+        self.branch_table[JMP] = self.op_JMP
         # self.branch_table[JEQ] = self.op_JEQ
         # self.branch_table[JNE] = self.op_JNE
 
@@ -204,8 +204,8 @@ class CPU:
         self.alu("CMP", arg_A, arg_B)
         self.pc += 3
 
-    # def op_JMP(self, arg_A, arg_B):
-    #     pass
+    def op_JMP(self, arg_A, arg_B):
+        self.pc = self.reg[arg_A]
 
     # def op_JEQ(self, arg_A, arg_B):
     #     pass
