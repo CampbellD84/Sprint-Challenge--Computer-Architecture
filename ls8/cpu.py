@@ -14,8 +14,9 @@ CALL = 0b01010000
 RET = 0b00010001
 CMP = 0b10100111
 JMP = 0b01010100
-# JEQ = 0b01010101
-# JNE = 0b01010110
+JEQ = 0b01010101
+JNE = 0b01010110
+
 ###  INVENTORY OF FILES ###
 
 # cpu.py - CPU class and methods
@@ -50,7 +51,7 @@ JMP = 0b01010100
 
 # X Add JMP Instruction
 
-# Add JEQ and JNE Instructions
+# X Add JEQ and JNE Instructions
 
 ############################
 
@@ -81,8 +82,8 @@ class CPU:
         self.branch_table[RET] = self.op_RET
         self.branch_table[CMP] = self.op_CMP
         self.branch_table[JMP] = self.op_JMP
-        # self.branch_table[JEQ] = self.op_JEQ
-        # self.branch_table[JNE] = self.op_JNE
+        self.branch_table[JEQ] = self.op_JEQ
+        self.branch_table[JNE] = self.op_JNE
 
     def load(self, name_of_file):
         """Load a program into memory."""
@@ -207,11 +208,19 @@ class CPU:
     def op_JMP(self, arg_A, arg_B):
         self.pc = self.reg[arg_A]
 
-    # def op_JEQ(self, arg_A, arg_B):
-    #     pass
+    def op_JEQ(self, arg_A, arg_B):
+        # check if self.fl[7] = 1
+        if self.fl[7] == 1:
+            self.pc = self.reg[arg_A]
+        else:
+            self.pc += 2
 
-    # def op_JNE(self, arg_A, arg_B):
-    #     pass
+    def op_JNE(self, arg_A, arg_B):
+        # check if self.fl[7] = 0
+        if self.fl[7] == 0:
+            self.pc = self.reg[arg_A]
+        else:
+            self.pc += 2
 
     def op_HLT(self, arg_A, arg_B):
         self.is_cpu_running = False
