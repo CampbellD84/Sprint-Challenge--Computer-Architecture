@@ -1,29 +1,7 @@
 """CPU functionality."""
 
 import sys
-
-LDI = 0b10000010
-PRN = 0b01000111
-HLT = 0b00000001
-ADD = 0b10100000
-SUB = 0b10100001
-MUL = 0b10100010
-PUSH = 0b01000101
-POP = 0b01000110
-CALL = 0b01010000
-RET = 0b00010001
-CMP = 0b10100111
-JMP = 0b01010100
-JEQ = 0b01010101
-JNE = 0b01010110
-AND = 0b10101000
-OR = 0b10101010
-XOR = 0b10101011
-SHL = 0b10101100
-SHR = 0b10101101
-MOD = 0b10100100
-
-
+from bin_oper_codes import *
 ###  INVENTORY OF FILES ###
 
 # cpu.py - CPU class and methods
@@ -62,7 +40,7 @@ MOD = 0b10100100
 
 # STRETCH
 
-# Add AND, OR, XOR, NOT, SHL, SHR, MOD
+# X Add AND, OR, XOR, NOT, SHL, SHR, MOD
 
 ############################
 
@@ -101,6 +79,7 @@ class CPU:
         self.branch_table[SHL] = self.op_SHL
         self.branch_table[SHR] = self.op_SHR
         self.branch_table[MOD] = self.op_MOD
+        self.branch_table[NOT] = self.op_NOT
 
     def load(self, name_of_file):
         """Load a program into memory."""
@@ -158,6 +137,9 @@ class CPU:
             self.reg[reg_a] >>= self.reg[reg_b]
         elif op == "MOD":
             self.reg[reg_a] %= self.reg[reg_b]
+        elif op == "NOT":
+            bit_mask = 0b11111111
+            self.reg[reg_a] ^= bit_mask
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -274,6 +256,10 @@ class CPU:
     def op_MOD(self, arg_A, arg_B):
         self.alu("MOD", arg_A, arg_B)
         self.pc += 3
+
+    def op_NOT(self, arg_A, arg_B):
+        self.alu("NOT", arg_A, arg_B)
+        self.pc += 2
 
     def op_HLT(self, arg_A, arg_B):
         self.is_cpu_running = False
